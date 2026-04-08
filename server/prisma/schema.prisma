@@ -1,0 +1,342 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum ConfidenceLevel {
+  VERIFIED
+  ESTIMATED
+  USER_ADDED
+  LOCAL_CUSTOM
+}
+
+enum PackageType {
+  CAN
+  BOTTLE
+  TIN
+  SACHET
+  LOAF
+  NONE
+}
+
+enum PreparationType {
+  RAW
+  BOILED
+  FRIED
+  GRILLED
+  ROASTED
+  STEAMED
+  BAKED
+  SMOKED
+  BLENDED
+  MASHED
+  STEWED
+  MIXED
+  OTHER
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTRA_ACTIVE
+}
+
+enum GoalType {
+  MAINTAIN
+  LOSE
+  GAIN
+}
+
+enum FastingSchedule {
+  TWELVE_TWELVE
+  FOURTEEN_TEN
+  SIXTEEN_EIGHT
+  EIGHTEEN_SIX
+  TWENTY_FOUR
+  CUSTOM
+}
+
+enum FastingStatus {
+  ACTIVE
+  COMPLETED
+  MISSED
+  PARTIAL
+}
+
+enum HeartRateSource {
+  MANUAL
+  DEVICE
+  SIMULATED
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+  DRINK
+  OTHER
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model FoodCategory {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  icon        String?
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  foods       FoodItem[]
+
+  @@index([slug])
+}
+
+model FoodItem {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  localName          String?
+  categoryId         Int
+  category           FoodCategory     @relation(fields: [categoryId], references: [id])
+  caloriesPer100g    Float
+  caloriesPerUnit    Float?
+  standardServingG   Float?
+  servingDescription String?
+  proteinPer100g     Float?
+  carbsPer100g       Float?
+  fatPer100g         Float?
+  fiberPer100g       Float?
+  preparationType    PreparationType  @default(OTHER)
+  confidenceLevel    ConfidenceLevel  @default(ESTIMATED)
+  sourceNote         String?
+  isUserAdded        Boolean          @default(false)
+  isArchived         Boolean          @default(false)
+  packageType        PackageType      @default(NONE)
+  packageVolumeMl    Float?
+  packageWeightG     Float?
+  slicesPerLoaf      Int?
+  caloriesPerSlice   Float?
+  imageUrl           String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  servingOptions     FoodServingOption[]
+  foodLogs           FoodLog[]
+  recipeIngredients  RecipeIngredient[]
+
+  @@index([categoryId])
+  @@index([name])
+  @@index([isArchived])
+}
+
+model FoodServingOption {
+  id          Int      @id @default(autoincrement())
+  foodId      Int
+  food        FoodItem @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  label       String   // e.g. "1 ladle", "1 ball", "1 bowl", "1 cup"
+  gramsEquiv  Float    // grams equivalent of this serving
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([foodId])
+}
+
+model FoodLog {
+  id              Int             @id @default(autoincrement())
+  foodId          Int
+  food            FoodItem        @relation(fields: [foodId], references: [id])
+  quantity        Float
+  unit            String          // g, ml, piece, ladle, bowl, can, bottle, slice, etc.
+  gramsConsumed   Float
+  caloriesTotal   Float
+  mealType        MealType        @default(OTHER)
+  preparationType PreparationType @default(OTHER)
+  note            String?
+  mood            String?
+  hunger          Int?            // 1-5
+  energy          Int?            // 1-5
+  loggedAt        DateTime        @default(now())
+  localDateKey    String          // YYYY-MM-DD for grouping
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([localDateKey])
+  @@index([foodId])
+  @@index([loggedAt])
+  @@index([mealType])
+}
+
+model WeightLog {
+  id           Int      @id @default(autoincrement())
+  weightKg     Float
+  note         String?
+  loggedAt     DateTime @default(now())
+  localDateKey String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([localDateKey])
+  @@index([loggedAt])
+}
+
+model StepLog {
+  id           Int      @id @default(autoincrement())
+  steps        Int
+  note         String?
+  loggedAt     DateTime @default(now())
+  localDateKey String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([localDateKey])
+  @@index([loggedAt])
+}
+
+model FastingLog {
+  id              Int             @id @default(autoincrement())
+  schedule        FastingSchedule
+  customFastHours Float?
+  customEatHours  Float?
+  startedAt       DateTime
+  endedAt         DateTime?
+  targetEndAt     DateTime
+  status          FastingStatus   @default(ACTIVE)
+  note            String?
+  localDateKey    String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([localDateKey])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model HeartRateSession {
+  id           Int             @id @default(autoincrement())
+  startedAt    DateTime        @default(now())
+  endedAt      DateTime?
+  sourceType   HeartRateSource @default(MANUAL)
+  sessionLabel String?
+  isLive       Boolean         @default(true)
+  note         String?
+  localDateKey String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  logs         HeartRateLog[]
+
+  @@index([localDateKey])
+  @@index([isLive])
+}
+
+model HeartRateLog {
+  id           Int              @id @default(autoincrement())
+  sessionId    Int?
+  session      HeartRateSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  bpm          Int
+  sourceType   HeartRateSource  @default(MANUAL)
+  capturedAt   DateTime         @default(now())
+  localDateKey String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([sessionId])
+  @@index([localDateKey])
+  @@index([capturedAt])
+}
+
+model UserProfileLocal {
+  id            Int           @id @default(1)
+  name          String?
+  sex           String?       // male, female
+  age           Int?
+  weightKg      Float?
+  heightCm      Float?
+  activityLevel ActivityLevel @default(MODERATELY_ACTIVE)
+  goal          GoalType      @default(MAINTAIN)
+  targetWeeklyChangeKg Float? @default(0.5)
+  dailyCalorieTarget   Float?
+  dailyStepTarget      Int?   @default(10000)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model AppSetting {
+  id        Int      @id @default(1)
+  theme     String   @default("light")
+  language  String   @default("en")
+  timezone  String   @default("Africa/Accra")
+  unitSystem String  @default("metric")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recipe {
+  id          Int                @id @default(autoincrement())
+  name        String
+  description String?
+  totalCalories Float?
+  totalGrams  Float?
+  servings    Int                @default(1)
+  isArchived  Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  ingredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id         Int      @id @default(autoincrement())
+  recipeId   Int
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  foodId     Int
+  food       FoodItem @relation(fields: [foodId], references: [id])
+  quantity   Float
+  unit       String
+  gramsUsed  Float
+  calories   Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([recipeId])
+  @@index([foodId])
+}
+
+model WaterLog {
+  id           Int      @id @default(autoincrement())
+  amountMl     Int
+  source       String   @default("glass") // glass, bottle, sachet, cup, other
+  note         String?
+  loggedAt     DateTime @default(now())
+  localDateKey String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([localDateKey])
+  @@index([loggedAt])
+}
+
+model SleepLog {
+  id           Int      @id @default(autoincrement())
+  bedtime      DateTime
+  wakeTime     DateTime
+  durationMin  Int
+  quality      Int      @default(3) // 1-5 scale
+  note         String?
+  localDateKey String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([localDateKey])
+  @@index([bedtime])
+}

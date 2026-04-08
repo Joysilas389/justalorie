@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#198754"/>
+  
+  <!-- Fork (left) -->
+  <g transform="translate(85, 95)">
+    <rect x="12" y="0" width="7" height="70" rx="3.5" fill="white"/>
+    <rect x="26" y="0" width="7" height="70" rx="3.5" fill="white"/>
+    <rect x="40" y="0" width="7" height="70" rx="3.5" fill="white"/>
+    <path d="M12,70 Q12,90 30,90 Q48,90 48,70" fill="none" stroke="white" stroke-width="7" stroke-linecap="round"/>
+    <rect x="26" y="85" width="7" height="140" rx="3.5" fill="white"/>
+  </g>
+  
+  <!-- Plate (center) -->
+  <circle cx="268" cy="256" r="120" fill="none" stroke="white" stroke-width="14"/>
+  <circle cx="268" cy="256" r="95" fill="none" stroke="white" stroke-width="5" opacity="0.35"/>
+  
+  <!-- J on plate -->
+  <text x="268" y="295" text-anchor="middle" font-family="Georgia,Times,serif" font-weight="bold" font-size="150" fill="white">J</text>
+  
+  <!-- Knife (right) -->
+  <g transform="translate(410, 95)">
+    <path d="M0,0 L0,75 Q0,90 8,90 L8,0 Q4,-5 0,0 Z" fill="white"/>
+    <rect x="0" y="85" width="8" height="140" rx="4" fill="white"/>
+  </g>
+</svg>

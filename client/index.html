@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#198754" />
+    <meta name="description" content="Justalorie — Personal Calorie Management for Ghanaian Food Lovers" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Justalorie</title>
+    <script>
+      // Prevent FOUC: apply saved theme before first paint
+      (function() {
+        const t = localStorage.getItem('justalorie-theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

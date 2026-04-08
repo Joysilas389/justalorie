@@ -1,0 +1,214 @@
+/* ─── Justalorie Custom Styles ────────────────────────────────────────────── */
+
+:root {
+  --jl-green: #198754;
+  --jl-green-light: #20c997;
+  --jl-orange: #fd7e14;
+  --jl-sidebar-width: 260px;
+}
+
+/* Splash screen */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+  color: #fff;
+  transition: opacity 0.5s ease;
+}
+.splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+.splash-logo {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.splash-sub {
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+.splash-spinner {
+  margin-top: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Layout */
+.app-sidebar {
+  width: var(--jl-sidebar-width);
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1030;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+.app-main {
+  margin-left: var(--jl-sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Mobile bottom nav */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  display: none;
+  border-top: 1px solid var(--bs-border-color);
+}
+.mobile-bottom-nav .nav-link {
+  font-size: 0.7rem;
+  padding: 0.4rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--bs-secondary);
+}
+.mobile-bottom-nav .nav-link.active {
+  color: var(--jl-green);
+}
+.mobile-bottom-nav .nav-link i {
+  font-size: 1.25rem;
+}
+
+/* Cards */
+.stat-card {
+  border: none;
+  border-radius: 0.75rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* Calorie ring */
+.calorie-ring-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+}
+.calorie-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Heart rate pulse */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.hr-pulse {
+  animation: pulse 1s ease-in-out infinite;
+  color: #dc3545;
+}
+
+/* Confidence badges */
+.badge-verified { background-color: #198754; }
+.badge-estimated { background-color: #fd7e14; }
+.badge-user-added { background-color: #0d6efd; }
+.badge-local-custom { background-color: #6f42c1; }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  .app-sidebar.show {
+    transform: translateX(0);
+  }
+  .app-main {
+    margin-left: 0;
+  }
+  .mobile-bottom-nav {
+    display: flex;
+  }
+  .app-main {
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .calorie-ring-container {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  opacity: 0.7;
+}
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--bs-tertiary-bg) 25%, var(--bs-secondary-bg) 50%, var(--bs-tertiary-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.375rem;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bs-secondary-bg); border-radius: 3px; }
+
+/* Chart wrapper responsive */
+.chart-responsive {
+  width: 100%;
+  min-height: 250px;
+}
+@media (max-width: 575.98px) {
+  .chart-responsive { min-height: 200px; }
+}
+
+.sidebar-nav .nav-link {
+  border-radius: 0.5rem;
+  margin-bottom: 2px;
+  padding: 0.6rem 1rem;
+  color: var(--bs-body-color);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link.active {
+  background-color: var(--bs-success-bg-subtle);
+  color: var(--jl-green);
+  font-weight: 600;
+}
